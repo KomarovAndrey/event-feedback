@@ -129,24 +129,43 @@
   </div>
 
   <div id="thank-you-screen" class="screen hidden">
-    <p class="thank-you">Спасибо за обратную связь</p>
+    <p class="thank-you">Спасибо за обратную связь!</p>
   </div>
 
   <script>
+    const STORAGE_KEYS = { excellent: 'feedback_good', ok: 'feedback_neutral', bad: 'feedback_bad' };
+
     const ratingScreen = document.getElementById('rating-screen');
     const thankYouScreen = document.getElementById('thank-you-screen');
     const buttons = document.querySelectorAll('.btn');
     const RETURN_DELAY_MS = 3000;
 
+    function getCount(key) {
+      const n = parseInt(localStorage.getItem(STORAGE_KEYS[key]) || '0', 10);
+      return isNaN(n) ? 0 : n;
+    }
+
+    function setCount(key, value) {
+      localStorage.setItem(STORAGE_KEYS[key], String(value));
+    }
+
+    function showThankYou() {
+      ratingScreen.classList.add('hidden');
+      thankYouScreen.classList.remove('hidden');
+      setTimeout(() => {
+        thankYouScreen.classList.add('hidden');
+        ratingScreen.classList.remove('hidden');
+      }, RETURN_DELAY_MS);
+    }
+
     buttons.forEach(btn => {
       btn.addEventListener('click', () => {
-        ratingScreen.classList.add('hidden');
-        thankYouScreen.classList.remove('hidden');
-
-        setTimeout(() => {
-          thankYouScreen.classList.add('hidden');
-          ratingScreen.classList.remove('hidden');
-        }, RETURN_DELAY_MS);
+        const formRating = btn.getAttribute('data-rating');
+        if (STORAGE_KEYS[formRating]) {
+          const count = getCount(formRating);
+          setCount(formRating, count + 1);
+        }
+        showThankYou();
       });
     });
   </script>
