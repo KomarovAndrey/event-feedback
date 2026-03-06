@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Отчёт по оценкам</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="./styles.css" />
+  <script src="https://unpkg.com/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
+</head>
+<body>
+  <div class="page">
+    <div class="card">
+      <h1>Отчёт по оценкам</h1>
+      <p class="subtitle">Сводка по таблице <code>feedback</code></p>
+
+      <div id="loading">Загружаем данные...</div>
+      <p id="error-message" class="error-message" hidden></p>
+
+      <div id="stats" class="stats" hidden>
+        <div class="stat-item">
+          <span class="stat-emoji">😊</span>
+          <span class="stat-label">Отлично</span>
+          <span id="count-good" class="stat-value">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-emoji">😐</span>
+          <span class="stat-label">Нормально</span>
+          <span id="count-neutral" class="stat-value">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-emoji">☹️</span>
+          <span class="stat-label">Плохо</span>
+          <span id="count-bad" class="stat-value">0</span>
+        </div>
+        <div class="stat-item stat-total">
+          <span class="stat-label">Всего ответов</span>
+          <span id="count-total" class="stat-value">0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Те же значения, что и в index.html
+    const SUPABASE_URL = "https://YOUR_PROJECT_ID.supabase.co";
+    const SUPABASE_ANON_KEY = "YOUR_ANON_PUBLIC_KEY";
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const loadingEl = document.getElementById("loading");
+    const errorMessage = document.getElementById("error-message");
+    const statsEl = document.getElementById("stats");
+
+    const countGoodEl = document.getElementById("count-good");
+    const countNeutralEl = document.getElementById("count-neutral");
+    const countBadEl = document.getElementById("count-bad");
+    const countTotalEl = document.getElementById("count-total");
+
+    async function loadStats() {
+      loadingEl.textContent = "Загружаем данные...";
+      errorMessage.hidden = true;
+      statsEl.hidden = true;
+
+      const { data, error } = await supabaseClient
+        .from("feedback")
+        .select("rating");
+
+      if (error) {
+        console.error(error);
+        loadingEl.textContent = "";
+        errorMessage.textContent = "Ошибка при загрузке данных отчёта.";
+        errorMessage.hidden = false;
+        return;
+      }
+
+      const counts = {
+        good: 0,
+        neutral: 0,
+        bad: 0,
+      };
+
+      data.forEach((row) => {
+        if (row.rating === "good") counts.good++;
+        else if (row.rating === "neutral") counts.neutral++;
+        else if (row.rating === "bad") counts.bad++;
+      });
+
+      const total = counts.good + counts.neutral + counts.bad;
+
+      countGoodEl.textContent = counts.good;
+      countNeutralEl.textContent = counts.neutral;
+      countBadEl.textContent = counts.bad;
+      countTotalEl.textContent = total;
+
+      loadingEl.textContent = "";
+      statsEl.hidden = false;
+    }
+
+    loadStats();
+  </script>
+</body>
+</html>
+

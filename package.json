@@ -1,0 +1,16 @@
+{
+  "name": "event-feedback",
+  "version": "1.0.0",
+  "description": "Простая страница оценки мероприятия с Supabase и отчётом, готовая для git и деплоя на Vercel.",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "keywords": [
+    "feedback",
+    "supabase",
+    "vercel"
+  ],
+  "author": "",
+  "license": "MIT"
+}
+
