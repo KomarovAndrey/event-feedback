@@ -185,10 +185,40 @@ h1 {
   font-variant-numeric: tabular-nums;
 }
 
+/* Страница отчёта: светлый текст на тёмной карточке, высокий контраст */
+.page .card {
+  color: #f1f5f9;
+}
+.page .card h1 {
+  color: #ffffff;
+  font-weight: 700;
+}
+.page .card .subtitle {
+  color: #cbd5e1;
+  font-size: 1rem;
+}
+.page .card .stat-label,
+.page .card .stat-value {
+  color: #f1f5f9;
+}
+.page .card .stat-value {
+  font-size: 1.25rem;
+  min-width: 2.5rem;
+  text-align: right;
+}
+.page .card .stat-total .stat-label,
+.page .card .stat-total .stat-value {
+  color: #ffffff;
+  font-weight: 700;
+}
+
 #loading {
-  font-size: 0.9rem;
-  color: var(--muted);
+  font-size: 1rem;
+  color: #94a3b8;
   margin-top: 8px;
+}
+.page .card #loading {
+  color: #cbd5e1;
 }
 
 *,
