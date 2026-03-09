@@ -1,7 +1,8 @@
 {
   "name": "event-feedback",
   "version": "1.0.0",
-  "description": "Простая страница оценки мероприятия с Supabase и отчётом, готовая для git и деплоя на Vercel.",
+  "description": "Страница оценки мероприятия с отчётом, деплой на Vercel, хранение в Redis или localStorage.",
+  "type": "module",
   "scripts": {
     "start": "npx serve ."
   },
@@ -11,6 +12,9 @@
     "vercel"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@upstash/redis": "^1.34.0"
+  }
 }
 

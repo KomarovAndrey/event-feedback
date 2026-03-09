@@ -146,6 +146,7 @@
   </div>
 
   <script>
+    const RATING_TO_DB = { excellent: 'good', ok: 'neutral', bad: 'bad' };
     const STORAGE_KEYS = { excellent: 'feedback_good', ok: 'feedback_neutral', bad: 'feedback_bad' };
 
     const ratingScreen = document.getElementById('rating-screen');
@@ -171,13 +172,26 @@
       }, RETURN_DELAY_MS);
     }
 
+    async function saveRating(rating) {
+      try {
+        const res = await fetch('/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rating }),
+        });
+        if (res.ok) return;
+      } catch (err) {
+        console.warn('API недоступен, сохраняю локально:', err);
+      }
+      const key = rating === 'good' ? 'excellent' : rating === 'neutral' ? 'ok' : 'bad';
+      if (STORAGE_KEYS[key]) setCount(key, getCount(key) + 1);
+    }
+
     buttons.forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', async () => {
         const formRating = btn.getAttribute('data-rating');
-        if (STORAGE_KEYS[formRating]) {
-          const count = getCount(formRating);
-          setCount(formRating, count + 1);
-        }
+        const rating = RATING_TO_DB[formRating];
+        if (rating) await saveRating(rating);
         showThankYou();
       });
     });

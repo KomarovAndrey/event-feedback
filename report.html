@@ -10,9 +10,9 @@
   <div class="page">
     <div class="card">
       <h1>Отчёт по оценкам</h1>
-      <p class="subtitle">Сводка по ответам (localStorage)</p>
+      <p class="subtitle" id="subtitle">Сводка по ответам</p>
 
-      <div id="loading" hidden></div>
+      <div id="loading">Загружаем данные...</div>
       <p id="error-message" class="error-message" hidden></p>
 
       <div id="stats" class="stats" hidden>
@@ -42,6 +42,8 @@
   <script>
     const STORAGE_KEYS = { good: 'feedback_good', neutral: 'feedback_neutral', bad: 'feedback_bad' };
 
+    const loadingEl = document.getElementById("loading");
+    const subtitleEl = document.getElementById("subtitle");
     const errorMessage = document.getElementById("error-message");
     const statsEl = document.getElementById("stats");
     const countGoodEl = document.getElementById("count-good");
@@ -49,21 +51,45 @@
     const countBadEl = document.getElementById("count-bad");
     const countTotalEl = document.getElementById("count-total");
 
-    function getCount(rating) {
-      const n = parseInt(localStorage.getItem(STORAGE_KEYS[rating]) || '0', 10);
-      return isNaN(n) ? 0 : n;
-    }
-
-    function loadStats() {
-      errorMessage.hidden = true;
-      const counts = { good: getCount('good'), neutral: getCount('neutral'), bad: getCount('bad') };
+    function showCounts(counts, source) {
       const total = counts.good + counts.neutral + counts.bad;
-
       countGoodEl.textContent = counts.good;
       countNeutralEl.textContent = counts.neutral;
       countBadEl.textContent = counts.bad;
       countTotalEl.textContent = total;
+      subtitleEl.textContent = source === 'api' ? 'Сводка по ответам (Vercel + Redis)' : 'Сводка по ответам (localStorage)';
+      loadingEl.hidden = true;
       statsEl.hidden = false;
+    }
+
+    function getLocalCount(rating) {
+      const n = parseInt(localStorage.getItem(STORAGE_KEYS[rating]) || '0', 10);
+      return isNaN(n) ? 0 : n;
+    }
+
+    async function loadStats() {
+      errorMessage.hidden = true;
+      statsEl.hidden = true;
+      loadingEl.hidden = false;
+      loadingEl.textContent = "Загружаем данные...";
+
+      try {
+        const res = await fetch('/api/stats');
+        if (res.ok) {
+          const data = await res.json();
+          showCounts({ good: data.good, neutral: data.neutral, bad: data.bad }, 'api');
+          return;
+        }
+      } catch (err) {
+        console.warn('API недоступен, показываю локальную статистику:', err);
+      }
+
+      const counts = {
+        good: getLocalCount('good'),
+        neutral: getLocalCount('neutral'),
+        bad: getLocalCount('bad')
+      };
+      showCounts(counts, 'local');
     }
 
     loadStats();
