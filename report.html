@@ -34,6 +34,7 @@
           <span class="stat-label">Всего ответов</span>
           <span id="count-total" class="stat-value">0</span>
         </div>
+        <button type="button" id="reset-btn" class="btn-reset">Сбросить статистику</button>
       </div>
     </div>
   </div>
@@ -89,7 +90,27 @@
       showCounts(counts, 'local');
     }
 
+    function clearLocalStats() {
+      Object.values(STORAGE_KEYS).forEach((key) => localStorage.removeItem(key));
+    }
+
+    async function handleReset() {
+      try {
+        const res = await fetch('/api/reset', { method: 'POST' });
+        if (res.ok) {
+          clearLocalStats();
+          loadStats();
+          return;
+        }
+      } catch (err) {
+        console.warn('API сброса недоступен:', err);
+      }
+      clearLocalStats();
+      loadStats();
+    }
+
     loadStats();
+    document.getElementById('reset-btn').addEventListener('click', handleReset);
   </script>
 </body>
 </html>
