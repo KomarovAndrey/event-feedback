@@ -10,7 +10,6 @@
   <div class="page">
     <div class="card">
       <h1>Отчёт по оценкам</h1>
-      <p class="subtitle" id="subtitle">Сводка по ответам</p>
 
       <div id="loading">Загружаем данные...</div>
       <p id="error-message" class="error-message" hidden></p>
@@ -43,7 +42,6 @@
     const STORAGE_KEYS = { good: 'feedback_good', neutral: 'feedback_neutral', bad: 'feedback_bad' };
 
     const loadingEl = document.getElementById("loading");
-    const subtitleEl = document.getElementById("subtitle");
     const errorMessage = document.getElementById("error-message");
     const statsEl = document.getElementById("stats");
     const countGoodEl = document.getElementById("count-good");
@@ -57,7 +55,6 @@
       countNeutralEl.textContent = counts.neutral;
       countBadEl.textContent = counts.bad;
       countTotalEl.textContent = total;
-      subtitleEl.textContent = source === 'api' ? 'Сводка по ответам (Vercel + Redis)' : 'Сводка по ответам (localStorage)';
       loadingEl.hidden = true;
       statsEl.hidden = false;
     }
